@@ -1,5 +1,7 @@
 package com.mutinda.myapplication;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -17,11 +19,14 @@ import com.mutinda.myapplication.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private String mOrderMessage;
+    public static final String extraOrderKey = "MY KEY ORDER MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                intent.putExtra(extraOrderKey,mOrderMessage);
+                startActivity(intent);
             }
         });
     }
@@ -60,17 +62,50 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+        switch (id) {
+            case R.id.action_order:
+                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_call:
+                Uri callUri = Uri.parse("tel:0700671519");
+                Intent intent1 = new Intent(Intent.ACTION_DIAL, callUri);
+                startActivity(intent1);
+                break;
+            case R.id.action_status:
+                displayToast("Status: okay");
+                break;
+            case R.id.action_location:
+                //Open Google map showing current device location
+                break;
+            case R.id.action_about_us:
+                Uri webUri = Uri.parse("https://creambell.com/about/");
+                Intent intent2 = new Intent(Intent.ACTION_VIEW,webUri);
+                startActivity(intent2);
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
+    public  void displayToast(String message){
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+    }
+
+    public void showDonut(View view) {
+        mOrderMessage = String.valueOf(R.string.donut_order);
+        displayToast(mOrderMessage);
+    }
+
+    public void showIceCreamSandwich(View view){
+        mOrderMessage = String.valueOf(R.string.ice_cream_sandwich_order);
+        displayToast(mOrderMessage);
+    }
+
+    public void showFroyo(View view){
+        mOrderMessage = String.valueOf(R.string.froyo_order);
+        displayToast(mOrderMessage);
     }
 }
